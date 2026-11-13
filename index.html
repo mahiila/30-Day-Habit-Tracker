@@ -13,7 +13,7 @@
   <main class="app-shell">
     <section id="setupScreen" class="setup-card">
       <h1>30-Day Habit Tracker</h1>
-      <p class="intro">Three small habits, every day for 30 days. Here's what you're signing up for:</p>
+      <p class="intro">Your daily habits for the next 30 days.<br>Add or delete habits anytime from "Manage habits".</p>
       <ul id="setupHabits" class="setup-habits"></ul>
       <p class="goal-line">Goal: complete 90% of all habits.</p>
       <label class="field-label" for="startDate">Choose your challenge start date</label>
@@ -27,10 +27,13 @@
     <div id="tracker" class="hidden">
       <header class="topbar">
         <span class="brand">30-Day Habit Tracker</span>
-        <button class="history-button" id="historyBtn" title="View history">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14h3M8 17.5h6"/></svg>
-          History
-        </button>
+        <div class="topbar-actions">
+          <button class="history-button" id="manageBtn">＋ Manage habits</button>
+          <button class="history-button" id="historyBtn" title="View history">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M8 14h3M8 17.5h6"/></svg>
+            History
+          </button>
+        </div>
       </header>
       <section class="top-card">
         <div class="top-row">
@@ -47,8 +50,8 @@
       </section>
       <section class="stats-grid" aria-label="Challenge summary">
         <article class="stat-card"><span class="stat-label">DAY</span><strong id="dayValue" class="num">1/30</strong><small>of the challenge</small></article>
-        <article class="stat-card"><span class="stat-label">OVERALL PROGRESS</span><strong id="completionValue" class="num">0%</strong><small>of all 90 habits</small></article>
-        <article class="stat-card"><span class="stat-label">HABIT AVERAGE</span><strong id="averageValue" class="num">0%</strong><small>across the three habits</small></article>
+        <article class="stat-card"><span class="stat-label">OVERALL PROGRESS</span><strong id="completionValue" class="num">0%</strong><small id="overallSub">of all 90 habits</small></article>
+        <article class="stat-card"><span class="stat-label">HABIT AVERAGE</span><strong id="averageValue" class="num">0%</strong><small>across your habits</small></article>
         <article class="stat-card"><span class="stat-label">STREAK</span><strong id="streakValue" class="num">0</strong><small>full days in a row</small></article>
       </section>
       <section class="workspace">
@@ -73,8 +76,8 @@
           </div>
           <p class="day-instruction" id="dayInstruction"></p>
           <div id="taskList" class="task-list"></div>
-          <div id="dailySuccess" class="success-message hidden"><strong>Daily goal achieved!</strong><span>You've completed all three habits today.</span></div>
-          <div id="challengeSuccess" class="challenge-success hidden"><h3>Challenge complete 🏆</h3><p>You completed all 90 habits.</p></div>
+          <div id="dailySuccess" class="success-message hidden"><strong>Daily goal achieved!</strong><span>You've completed all your habits today.</span></div>
+          <div id="challengeSuccess" class="challenge-success hidden"><h3>Challenge complete 🏆</h3><p>You completed all habits.</p></div>
         </aside>
       </section>
       <section class="benchmark-card">
@@ -91,23 +94,43 @@
         <div class="rating-row"><span id="ratingLabel">Not rated yet</span><span id="ratingHint"></span></div>
       </section>
       <footer class="footer">
-    <button id="resetButton" class="reset-button">
-        <span class="reset-icon">↻</span>
-        <span>Reset challenge</span>
-    </button>
-</footer>
+        <button id="resetButton" class="reset-button">
+          <span class="reset-icon">↻</span>
+          <span>Reset challenge</span>
+        </button>
+      </footer>
     </div>
   </main>
+
   <div id="historyModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
     <div class="modal-backdrop" id="modalBackdrop"></div>
     <section class="modal-panel">
       <div class="modal-header"><h2 id="historyTitle">History</h2><button id="closeHistory" class="close-button" aria-label="Close history">×</button></div>
-      <p class="modal-intro">Day-by-day record of your three habits.</p>
+      <p class="modal-intro">Day-by-day record of your habits.</p>
       <div class="history-table-wrap">
-        <table><thead><tr><th>Day / Date</th><th>Digital Distractions</th><th>Study</th><th>Planning</th><th>Daily %</th></tr></thead><tbody id="historyBody"></tbody></table>
+        <!-- CHANGED: thead is now empty, filled by script.js -->
+        <table><thead id="historyHead"></thead><tbody id="historyBody"></tbody></table>
       </div>
     </section>
   </div>
+
+  <div id="manageModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="manageTitle">
+    <div class="modal-backdrop" id="manageBackdrop"></div>
+    <section class="modal-panel">
+      <div class="modal-header"><h2 id="manageTitle">Manage habits</h2><button id="closeManage" class="close-button" aria-label="Close">×</button></div>
+      <ul id="manageList" class="manage-list"></ul>
+      <div class="add-form">
+        <input id="newName" type="text" placeholder="Habit name">
+        <input id="newAction" type="text" placeholder="Specific action (optional)">
+        <div class="add-row">
+          <input id="newTime" type="text" placeholder="Time, e.g. 6:00 AM">
+          <input id="newDuration" type="text" placeholder="Duration, e.g. 30 minutes">
+        </div>
+        <button id="addHabitBtn" class="primary-button">Add habit</button>
+      </div>
+    </section>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="script.js"></script>
 </body>
